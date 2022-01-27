@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Bouncing balls</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<h1>bouncing balls</h1>
+<div class="player1">
+  <div class="balls_left"></div>
+  <div class="balls_caught"></div>
+</div>
+<div class="player2">
+  <div class="balls_left"></div>
+  <div class="balls_caught"></div>
+</div>
+<div class="menu_panel">
+  <h2>Bouncing Balls</h2>
+  <div class="radio_group form-group">
+    <div>
+      <input id="player_choose_1" type="radio" name="isPlayer2">
+      <label for="player_choose_1">One player</label>
+    </div>
+    <div>
+      <input id="player_choose_2" type="radio" name="isPlayer2" checked>
+      <label for="player_choose_2">Two players</label>
+    </div>
+    </div>
+  <div class="range_group form_group">
+    <div class="range_balls_number">
+      <label for="balls_number_range">Set the number of balls</label>
+      <input id="balls_number_range" type="range" min="1" max="201" step="2" value="55">
+      <output class="show_balls_number_range">55</output>
+    </div>
+  </div>
+  <button class="new_game_btn">New Game</button>
+</div>
+<div class="paused">PAUSED, PRESS ESC TO CONTINUE</div>
+<div class="win"></div>
+<button class="menu_on_btn">MAIN MENU</button>
+<canvas></canvas>
+
+<script src="test.js"></script>
+</body>
+</html>
