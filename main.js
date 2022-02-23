@@ -101,7 +101,7 @@ function controlling() {
             let key = allControlsPressed[i];
             if (player1.controls.includes(key)) {
                 player1ControlsPressed.push(key);
-            } else if ( isPlayer2 && player2.controls.includes(key)) {
+            } else if (isPlayer2 && player2.controls.includes(key)) {
                 player2ControlsPressed.push(key);
             }
         }
@@ -150,7 +150,7 @@ function playPreparation() {
     isPlayer2 = players.checked;
 }
 // set player1
-function setPlayer1() {
+function createPlayer1() {
     player1 = new PlayerCircle(
         width * .5,
         height * .5,
@@ -161,7 +161,7 @@ function setPlayer1() {
     );
 }
 // set player2
-function setPlayer2() {
+function createPlayer2() {
     player2 = new PlayerCircle(
         width * .75,
         height * .5,
@@ -221,11 +221,25 @@ function createEnemyBall() {
     enemyBall1 = new EnemyBall(
         100,
         100,
+        3,
         5,
-        0,
-        50
+        height*width/15000,
+        5
     )
 }
+
+// enemyBall speed calculation
+function speedFollow(player, enemy) {
+    let deltaX = player.x - enemy.x;
+    let deltaY = player.y - enemy.y;
+// deltaX < 0 => go left, deltaY < 0 => go up
+    let hypotenuse = Math.sqrt(deltaX**2 + deltaY**2);
+    let speedX = enemy.speed * deltaX / hypotenuse;
+    let speedY = enemy.speed * deltaY / hypotenuse;
+
+    return {speedX: speedX, speedY: speedY}
+}
+
 // Animation loop
 function loop() {
     if (isPaused) return;
@@ -375,11 +389,11 @@ class PlayerCircle extends Shape {
 // -----------  EnemyBall class -------------
 // ------------------------------------------
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 class EnemyBall extends Shape {
-    constructor(x, y, velX, velY, size) {
+    constructor(x, y, velX, velY, size, speed) {
         super(x, y, velX, velY);
         this.size = size;
+        this.speed = speed;
     }
     draw() {
         ctx.beginPath();
@@ -388,22 +402,31 @@ class EnemyBall extends Shape {
         ctx.fill();
     }
     update() {
-        if ((this.x + this.size) >= width) {
-            this.velX = player1.x / 100;
+        if (((this.x + this.size) >= width) ||
+            ((this.x - this.size) <= 0) ||
+            ((this.y + this.size) >= height) ||
+            ((this.y - this.size) <= 0)) {
+            this.velX = speedFollow(player1, enemyBall1).speedX;
+            this.velY = speedFollow(player1, enemyBall1).speedY;
         }
 
-        if ((this.x - this.size) <= 0) {
-            this.velX = player1.x / 100;
-        }
 
-        if ((this.y + this.size) >= height) {
-            this.velY = player1.y / 100;
-        }
-
-        if ((this.y - this.size) <= 0) {
-            this.velY = player1.y / 100;
-        }
-
+        // if ((this.x + this.size) >= width) {
+        //     this.velX = speedFollow(player1, enemyBall1).speedX;
+        // }
+        //
+        // if ((this.x - this.size) <= 0) {
+        //     this.velX = speedFollow(player1, enemyBall1).speedX;
+        // }
+        //
+        // if ((this.y + this.size) >= height) {
+        //     this.velY = speedFollow(player1, enemyBall1).speedY;
+        // }
+        //
+        // if ((this.y - this.size) <= 0) {
+        //     this.velY = speedFollow(player1, enemyBall1).speedY;
+        // }
+        //
         this.x += this.velX;
         this.y += this.velY;
     }
@@ -417,18 +440,18 @@ menuOn();
 document.addEventListener('keydown', togglePause);
 startBtn.addEventListener('click', function () {
     playPreparation();
-    createEnemyBall();
     createBalls();
-    setPlayer1();
+    createPlayer1();
     panelBallsCaught1.textContent = 'balls caught 0';
     panelBallsCaught2.textContent = '';
     allControls = player1.controls;
     if (isPlayer2) {
         player1.x = width * .25;
-        setPlayer2();
+        createPlayer2();
         panelBallsCaught2.textContent = 'balls caught 0';
         allControls = player1.controls.concat(player2.controls);
     }
+    createEnemyBall();
     document.addEventListener('keydown', keyPressed);
     document.addEventListener('keyup', keyReleased);
     loop();
